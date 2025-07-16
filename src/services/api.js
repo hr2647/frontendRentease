@@ -20,17 +20,12 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-/**
- * Fetches properties from the backend, with optional filters.
- * @param {object} filters - An object containing filter criteria (e.g., { minPrice, maxPrice, location })
- */
+
 export const getAllProperties = async (filters = {}) => {
   try {
-    // Clean the filters object to remove any empty keys
     const cleanedFilters = Object.fromEntries(
       Object.entries(filters).filter(([_, v]) => v != null && v !== '')
     );
-    
     const params = new URLSearchParams(cleanedFilters);
     const response = await api.get(`/properties?${params.toString()}`);
     return response.data;
@@ -100,6 +95,19 @@ export const applyToProperty = async (propertyId, message) => {
     }
 };
 
+export const getApplicationStatus = async (propertyId) => {
+  try {
+    const response = await api.get(`/applications/status/${propertyId}`);
+    return response.data;
+  } catch (error) {
+      if (error.response && error.response.status === 404) {
+          return { status: 'not_applied' };
+      }
+    console.error('Failed to fetch application status:', error);
+    throw error;
+  }
+};
+
 export const getApplicationsForProperty = async (propertyId) => {
   try {
     const response = await api.get(`/applications/property/${propertyId}`);
@@ -154,11 +162,6 @@ export const getAllUsersForAdmin = async () => {
   }
 };
 
-/**
- * Deletes a user (Admin only).
- * Corresponds to DELETE /api/admin/users/:id
- * @param {string} userId The ID of the user to delete.
- */
 export const deleteUserAsAdmin = async (userId) => {
   try {
     const response = await api.delete(`/admin/users/${userId}`);
@@ -169,12 +172,6 @@ export const deleteUserAsAdmin = async (userId) => {
   }
 };
 
-// --- New Admin Property Functions ---
-
-/**
- * Fetches all properties for an admin.
- * Corresponds to GET /api/admin/properties
- */
 export const getAllPropertiesForAdmin = async () => {
   try {
     const response = await api.get('/admin/properties');
@@ -185,11 +182,6 @@ export const getAllPropertiesForAdmin = async () => {
   }
 };
 
-/**
- * Deletes a property as an admin.
- * Corresponds to DELETE /api/admin/properties/:id
- * @param {string} propertyId The ID of the property to delete.
- */
 export const deletePropertyAsAdmin = async (propertyId) => {
   try {
     const response = await api.delete(`/admin/properties/${propertyId}`);
@@ -200,12 +192,6 @@ export const deletePropertyAsAdmin = async (propertyId) => {
   }
 };
 
-// --- Messaging Functions ---
-
-/**
- * Fetches all messages for the authenticated user.
- * Corresponds to GET /api/messages
- */
 export const getMessages = async () => {
   try {
     const response = await api.get('/messages');
@@ -216,11 +202,6 @@ export const getMessages = async () => {
   }
 };
 
-/**
- * Sends a new message.
- * Corresponds to POST /api/messages
- * @param {object} messageData - { receiverId, content, propertyId }
- */
 export const sendMessage = async (messageData) => {
   try {
     const response = await api.post('/messages', messageData);
@@ -231,41 +212,6 @@ export const sendMessage = async (messageData) => {
   }
 };
 
-export const getApplicationStatus = async (propertyId) => {
-  try {
-    // We assume a new endpoint GET /api/applications/status/:propertyId
-    // You will need to add this to your backend.
-    const response = await api.get(`/applications/status/${propertyId}`);
-    return response.data;
-  } catch (error) {
-      if (error.response && error.response.status === 404) {
-          return { status: 'not_applied' };
-      }
-    console.error('Failed to fetch application status:', error);
-    throw error;
-  }
-};
-
-/**
- * Creates a fake payment for a property.
- * Corresponds to POST /api/payments
- * @param {object} paymentData - { amount, propertyId }
- */
-export const createPayment = async (paymentData) => {
-  try {
-    const response = await api.post('/payments', paymentData);
-    return response.data;
-  } catch (error) {
-    console.error('Failed to create payment:', error.response?.data?.message || error.message);
-    throw error.response?.data || error;
-  }
-};
-// --- New Booking Functions ---
-
-/**
- * Creates a new booking request.
- * @param {object} bookingData - { propertyId, startDate, endDate, totalPrice }
- */
 export const createBooking = async (bookingData) => {
   try {
     const response = await api.post('/bookings', bookingData);
@@ -276,9 +222,6 @@ export const createBooking = async (bookingData) => {
   }
 };
 
-/**
- * Fetches all bookings for the authenticated user.
- */
 export const getMyBookings = async () => {
   try {
     const response = await api.get('/bookings/my-bookings');
@@ -289,14 +232,8 @@ export const getMyBookings = async () => {
   }
 };
 
-/**
- * Fetches all confirmed booking dates for a property.
- * @param {string} propertyId
- */
 export const getBookedDates = async (propertyId) => {
     try {
-        // NOTE: Ensure you have added the corresponding route to your backend:
-        // GET /api/bookings/property/:propertyId/dates
         const response = await api.get(`/bookings/property/${propertyId}/dates`);
         return response.data;
     } catch (error) {
@@ -304,12 +241,7 @@ export const getBookedDates = async (propertyId) => {
         throw error;
     }
 };
-// --- New Landlord Booking Functions ---
 
-/**
- * Fetches all bookings for a specific property (Landlord only).
- * @param {string} propertyId
- */
 export const getBookingsForProperty = async (propertyId) => {
   try {
     const response = await api.get(`/bookings/property/${propertyId}`);
@@ -320,19 +252,35 @@ export const getBookingsForProperty = async (propertyId) => {
   }
 };
 
-/**
- * Updates the status of a booking (Landlord only).
- * @param {string} bookingId
- * @param {string} status - 'confirmed' or 'cancelled'
- */
 export const updateBookingStatus = async (bookingId, status) => {
   try {
     const response = await api.put(`/bookings/${bookingId}`, { status });
     return response.data;
   } catch (error) {
     console.error('Failed to update booking status:', error);
+    throw error.response?.data || error;
+  }
+};
+
+export const createRazorpayOrder = async (orderData) => {
+  try {
+    const response = await api.post('/payments/order', orderData);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to create Razorpay order:', error);
     throw error;
   }
 };
+
+export const verifyPayment = async (verificationData) => {
+  try {
+    const response = await api.post('/payments/verify', verificationData);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to verify payment:', error);
+    throw error;
+  }
+};
+
 
 export default api;

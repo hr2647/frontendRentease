@@ -55,8 +55,8 @@ const ManageBookingsPage = () => {
             {bookings.map((booking) => (
               <li key={booking._id} className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div className="mb-4 md:mb-0">
-                  <p className="font-semibold text-lg">{booking.tenant.name}</p>
-                  <p className="text-gray-600">{booking.tenant.email}</p>
+                  <p className="font-semibold text-lg">{booking.tenant?.name || 'Unknown User'}</p>
+                  <p className="text-gray-600">{booking.tenant?.email || 'No email'}</p>
                   <p className="text-sm font-semibold mt-1">
                     {format(new Date(booking.startDate), 'MMM dd, yyyy')} - {format(new Date(booking.endDate), 'MMM dd, yyyy')}
                   </p>

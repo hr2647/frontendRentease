@@ -68,7 +68,7 @@ const MainLayout = () => {
     <div className="bg-gray-50 text-gray-900 min-h-screen">
       <Navbar />
       <main>
-        <Routes>
+       <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/property/:id" element={<PropertyDetailsPage />} />
@@ -78,7 +78,6 @@ const MainLayout = () => {
           {/* Protected Landlord Routes */}
           <Route path="/dashboard/landlord" element={<ProtectedRoute role="landlord"><LandlordDashboardPage /></ProtectedRoute>} />
           <Route path="/property/new" element={<ProtectedRoute role="landlord"><CreatePropertyPage /></ProtectedRoute>} />
-          {/* FIX: This route now correctly points to the new ManageBookingsPage */}
           <Route path="/property/:propertyId/bookings" element={<ProtectedRoute role="landlord"><ManageBookingsPage /></ProtectedRoute>} />
 
           {/* Protected Tenant Route */}
