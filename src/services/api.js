@@ -282,5 +282,18 @@ export const verifyPayment = async (verificationData) => {
   }
 };
 
-
+// --- New Admin Analytics Function ---
+/**
+ * Fetches platform analytics data (Admin only).
+ * Corresponds to GET /api/admin/analytics
+ */
+export const getPlatformAnalytics = async () => {
+  try {
+    const response = await api.get('/admin/analytics');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch platform analytics:', error);
+    throw error;
+  }
+};
 export default api;

@@ -19,6 +19,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminUserManagementPage from './pages/AdminUserManagementPage';
 import ManageBookingsPage from './pages/ManageBookingsPage';
 import AdminPropertyManagementPage from './pages/AdminPropertyManagementPage';
+import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
 import InboxPage from './pages/InboxPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
@@ -87,6 +88,7 @@ const MainLayout = () => {
           <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboardPage /></ProtectedRoute>} />
           <Route path="/admin/users" element={<ProtectedRoute role="admin"><AdminUserManagementPage /></ProtectedRoute>} />
           <Route path="/admin/properties" element={<ProtectedRoute role="admin"><AdminPropertyManagementPage /></ProtectedRoute>} />
+          <Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AdminAnalyticsPage /></ProtectedRoute>} />
           
           {/* Protected Messaging Route */}
           <Route path="/inbox" element={<ProtectedRoute><InboxPage /></ProtectedRoute>} />
